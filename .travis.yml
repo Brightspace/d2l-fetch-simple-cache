@@ -4,7 +4,7 @@ script:
 - npm run build
 - npm run test:lint
 - wct --skip-plugin local
-# - 'if [ "$TRAVIS_BRANCH" == "master" ]; then frauci-update-version && export TRAVIS_TAG=$(frauci-get-version) && npm run build && npm run publish-release; fi'
+- 'if [ "$TRAVIS_BRANCH" == "master" ]; then frauci-update-version && export TRAVIS_TAG=$(frauci-get-version) && npm run build && npm run publish-release; fi'
 env:
   global:
   - REPO_NAME=d2l-fetch-simple-cache
@@ -13,7 +13,7 @@ env:
   # CDN_SECRET
   - secure: CA/ehWONin4NInwmkCzjgRqeC26Ywdyj6mJHWEgFPpkEOOi1dgmrkL11CIsmbzr2+qOehZoUOrd+EuPt2uZQEDwK2dN6sIDoodr1DjvfnnUue9SKL8Mpn3PebdhGw0gSl9ujSinfR5OzO5fjOHwp7WHICLQ2FcOvUdV49zxZ82OZUnu2GaQ/J0aTJO2/haV5LPfMwLnZmXXfDVoQUxXz3m7V8Rh45b8/DAMpn9/lKepl8wX/saNpUbamiKwRaWQEp1IO63bODjok6xVCtRlILLUHJ6SjqyunmfXAXr2iGjD9PK1R5OSXNqviB755d6FxgFxgYbgRwRjLGNi9UWpCH9lwx5EZEm/lvrdfqQiloAVDWdEknA1UyGhX1KfvRVhqc3jUymzCchYDM+upEYDHpE0R+fcMjWStH7PNBanCsfgWRF5oSLCC0Y2vlLaDPMTWYIS1k3bO7IsmjrF2TDz7yoqAFsJZK//IVOpugD6FJOt2cMg/pjJJk/lGii5jpWxXm2mXWMKNZu3qpQsYMWBZvtmdmfaVwfjLrE2o09182P+TUYmKrlB/15qUVMqi/UGmkQg9JZ+1tFqZDsBUd/ms4vrx+dFkh+GYYg2uExcbQywBZyhE1RKORLROvbKoam0ye+0vhTlVDfn1rc7HOKLDKcrqGbAdmwbrogYlSeZA+qc=
   # GITHUB_RELEASE_TOKEN
-  # - secure: A0K5t371puMWdrdpV/KLx3OL7dOhry/rcIKhp/wn+3LGQoSdOFh9jTijn+lyV/O4kgJFqr6qGd6ah6wSab7xXV6Hd5EXt5vJ1+8laCtLtSrn5LQxJw9j5pm/cZUn8ZKL+sWlDBABdAvKqmJxEz2cS3qbc24RFajfWX9TXOmJZ47mnpXVH7BI0pMqKOX4GVf7FHaKPs7/z4JBQZChwoOpk8KrD4ZeOArunA/gZNYGI36jLFjKphTDPKqCfysOmpQWYZXm6NxWBZLJ0l1OaYKwGM35+MdpacF01YQvAL+/r9V2MXZHvCqUKwJ1tlw9UMYh+kWx/p9n2KGgiEPQuWi/HevS4k4glQ7yB2dy8zKkjEdg2Ihwnx6A4EogoJR75NnRUwf5p6D3Xka4ldR0k2rdZRHasyu19mqFizAtriY5oioFhUqDTno7Mc7unSIfihzWOSl9bEsru7JHk8viWrKrOGqKHzQvhzLNtm/x48N2grGLiMPF/ciEM18nKu2DgOq3/iwn8fD/PzBGlgBX0o6FOCxq70KJEjeVWng/qfqnisnV0msc7JaoqyqzavyhTb/LIfUR6ATCwIGelGDFABh/NOP4hhR6KzNuTt53qx9YW+IoW5Xmo60sR/CVKFc2XJRxyEhB5iIC18EP0geiE9ZJ8CeaS/iEmWmH4vIjbyjoEIc=
+  - secure: cCuKrRr2ebOBO+hApunX0GbBtx91PtXW628onGoh4c8JldOEJlUzaMFgSAGOnTLCGZWCvesXFSUyGPvhtr2H6C6Y9HmVB5VT6jS4P11roKvoSTR0nUpLbV47YoX0TRYUF5UGOPTgNW7tH1dCxdDsy4B2VNiFpju8mTJ+CGeDYZQBXyVvRVFqSjNLARbm9j0448lxWIKMZJROAJX6f9/irIE27NwpcegoViQMdLombrZIYVDDAyBlaoSkYG7dwJZnG/7KmwEistEB2RGAcIOPmtfao1PBT00GzuBUnSwoB8apHxe7s82oOseo3xxjVv7ZQfhKLEkLR20yT4Vms15kwlcaOXR9ALDeox5Lbq/Jp2IF+KWYBlmQL/J6kC1mJIyaREjHVt7FciN20LR3a3fa60gDWOAFUXf1FMMgdXekEW6Sejop8qGCjC9ereSaL2q5QZMMJfXKqIf/1yJLgXoVJNNp5VKvBD7HBgqLjsyvfUkth9/cLPKN5FRIFdwgEpHWH4pdSmltnFMO6hHFzvnPaL/3xRWNr4B5FsXnWP72X46X5vT/u3yXvpMako6Zao45th5YHKM4EL0VqbHv5gAkl0ZK8ejIsDnQlxlu7Lt3oh71O3nWWWSTY9UHVs8cFV3kUztRWjAyAp2COBa8YRcjkvuUTgYrzizull18vT2SVuk=
 addons:
   jwt:
     #SAUCE_ACCESS_KEY
