@@ -22,7 +22,7 @@
       "moduleType": "lib",
       "targetDirectory": "d2lfetch-simple-cache",
       "creds": {
-        "key": "AKIAJ32HJEFOAO2L7B7A",
+        "key": "AKIAJY65S22AMNMEXEMQ",
         "secretVar": "CDN_SECRET"
       },
       "devTagVar": "TRAVIS_COMMIT",
