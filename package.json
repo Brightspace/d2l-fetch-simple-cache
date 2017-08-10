@@ -1,6 +1,6 @@
 {
   "name": "d2l-fetch-simple-cache",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Provides a middleware function for caching fetch responses for the same url+auth combination",
   "main": "index.js",
   "author": "D2L Corporation",
