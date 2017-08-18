@@ -3,7 +3,7 @@ import parseCacheControl from 'parse-cache-control';
 export class D2LFetchSimpleCache {
 
 	constructor() {
-		this._simlpyCachedRequests = this._simlpyCachedRequests || [];
+		this._simplyCachedRequests = this._simplyCachedRequests || [];
 	}
 
 	cache(request, next, options) {
@@ -32,17 +32,17 @@ export class D2LFetchSimpleCache {
 		}
 
 		if (noCache) {
-			delete this._simlpyCachedRequests[key];
+			delete this._simplyCachedRequests[key];
 		}
 
-		if (this._simlpyCachedRequests[key]) {
+		if (this._simplyCachedRequests[key]) {
 			const now = Date.now();
-			if (this._simlpyCachedRequests[key].cacheExpires >= now && this._simlpyCachedRequests[key].cacheSetAt + (maxAge * 1000) >= now) {
-				if (this._simlpyCachedRequests[key].response instanceof Response) {
-					return Promise.resolve(this._simlpyCachedRequests[key].response);
+			if (this._simplyCachedRequests[key].cacheExpires >= now && this._simplyCachedRequests[key].cacheSetAt + (maxAge * 1000) >= now) {
+				if (this._simplyCachedRequests[key].response instanceof Response) {
+					return Promise.resolve(this._simplyCachedRequests[key].response);
 				}
 			} else { // expired
-				delete this._simlpyCachedRequests[key];
+				delete this._simplyCachedRequests[key];
 			}
 		}
 
@@ -56,7 +56,7 @@ export class D2LFetchSimpleCache {
 				.then(this._clone)
 				.then(function(response) {
 					const now = Date.now();
-					this._simlpyCachedRequests[key] = {
+					this._simplyCachedRequests[key] = {
 						cacheSetAt: now,
 						cacheExpires: now + (maxAge * 1000),
 						response: response
