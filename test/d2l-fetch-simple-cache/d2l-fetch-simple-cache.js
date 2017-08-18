@@ -158,10 +158,9 @@ describe('d2l-fetch-simple-cache', function() {
 			window.d2lfetch.simpleCache(secondRequest, secondNext),
 			window.d2lfetch.simpleCache(thirdRequest, thirdNext)
 		]).then(function(responses) {
-			// expect different promises
-			expect(responses[0]).not.to.equal(responses[1]);
-			expect(responses[1]).not.to.equal(responses[2]);
-			expect(responses[0]).not.to.equal(responses[2]);
+			// expect the same promise
+			expect(responses[0]).to.equal(responses[1]);
+			expect(responses[1]).to.equal(responses[2]);
 			Promise.all([
 				responses[0].json,
 				responses[1].json,
@@ -171,6 +170,60 @@ describe('d2l-fetch-simple-cache', function() {
 				expect(bodies[0]).to.equal(bodies[1]);
 				expect(bodies[1]).to.equal(bodies[2]);
 				expect(bodies[0]).to.equal(bodies[2]);
+				done();
+			});
+		});
+	});
+
+	it('should reject calls to blob()', function(done) {
+		var matchedResponse = new Response('{ dataprop: \'sweet sweet data\' }', { status: 200, statusText: 'super!' });
+		var firstRequest = getRequest('/path/to/data');
+		var firstNext = sandbox.stub().returns(Promise.resolve(matchedResponse));
+		var secondRequest = getRequest('/path/to/data');
+		var secondNext = sandbox.stub().returns(Promise.reject);
+
+		Promise.all([
+			window.d2lfetch.simpleCache(firstRequest, firstNext),
+			window.d2lfetch.simpleCache(secondRequest, secondNext)
+		]).then(function(responses) {
+			responses[0].blob().catch(function(err) {
+				expect(err.message).to.equal('simple-cache middleware cannot be used with blob response bodies');
+				done();
+			});
+		});
+	});
+
+	it('should reject calls to formData()', function(done) {
+		var matchedResponse = new Response('{ dataprop: \'sweet sweet data\' }', { status: 200, statusText: 'super!' });
+		var firstRequest = getRequest('/path/to/data');
+		var firstNext = sandbox.stub().returns(Promise.resolve(matchedResponse));
+		var secondRequest = getRequest('/path/to/data');
+		var secondNext = sandbox.stub().returns(Promise.reject);
+
+		Promise.all([
+			window.d2lfetch.simpleCache(firstRequest, firstNext),
+			window.d2lfetch.simpleCache(secondRequest, secondNext)
+		]).then(function(responses) {
+			responses[0].formData().catch(function(err) {
+				expect(err.message).to.equal('simple-cache middleware cannot be used with formData response bodies');
+				done();
+			});
+		});
+	});
+
+	it('should reject calls to arrayBuffer()', function(done) {
+		var matchedResponse = new Response('{ dataprop: \'sweet sweet data\' }', { status: 200, statusText: 'super!' });
+		var firstRequest = getRequest('/path/to/data');
+		var firstNext = sandbox.stub().returns(Promise.resolve(matchedResponse));
+		var secondRequest = getRequest('/path/to/data');
+		var secondNext = sandbox.stub().returns(Promise.reject);
+
+		Promise.all([
+			window.d2lfetch.simpleCache(firstRequest, firstNext),
+			window.d2lfetch.simpleCache(secondRequest, secondNext)
+		]).then(function(responses) {
+			responses[0].arrayBuffer().catch(function(err) {
+				expect(err.message).to.equal('simple-cache middleware cannot be used with arrayBuffer response bodies');
 				done();
 			});
 		});
