@@ -3,7 +3,7 @@ import parseCacheControl from 'parse-cache-control';
 export class D2LFetchSimpleCache {
 
 	constructor() {
-		this._parentPortalCachedRequests = [];
+		this._simplyCachedRequests = this._simplyCachedRequests || [];
 	}
 
 	cache(request, next, options) {
@@ -32,17 +32,17 @@ export class D2LFetchSimpleCache {
 		}
 
 		if (noCache) {
-			delete this._parentPortalCachedRequests[key];
+			delete this._simplyCachedRequests[key];
 		}
 
-		if (this._parentPortalCachedRequests[key]) {
+		if (this._simplyCachedRequests[key]) {
 			const now = Date.now();
-			if (this._parentPortalCachedRequests[key].cacheExpires >= now && this._parentPortalCachedRequests[key].cacheSetAt + (maxAge * 1000) >= now) {
-				if (this._parentPortalCachedRequests[key].response instanceof Response) {
-					return Promise.resolve(this._parentPortalCachedRequests[key].response.clone());
+			if (this._simplyCachedRequests[key].cacheExpires >= now && this._simplyCachedRequests[key].cacheSetAt + (maxAge * 1000) >= now) {
+				if (this._simplyCachedRequests[key].response instanceof Response) {
+					return Promise.resolve(this._simplyCachedRequests[key].response);
 				}
 			} else { // expired
-				delete this._parentPortalCachedRequests[key];
+				delete this._simplyCachedRequests[key];
 			}
 		}
 
@@ -52,17 +52,20 @@ export class D2LFetchSimpleCache {
 
 		const result = next(request);
 		if (result && result instanceof Promise && !noStore) {
-			result.then(function(response) {
-				const now = Date.now();
-				this._parentPortalCachedRequests[key] = {
-					cacheSetAt: now,
-					cacheExpires: now + (maxAge * 1000),
-					response: response
-				};
-			}.bind(this));
+			return result
+				.then(this._clone)
+				.then(function(response) {
+					const now = Date.now();
+					this._simplyCachedRequests[key] = {
+						cacheSetAt: now,
+						cacheExpires: now + (maxAge * 1000),
+						response: response
+					};
+					return response;
+				}.bind(this));
 		}
 
-		return this._clone(result);
+		return result;
 	}
 
 	_getKey(request) {
@@ -74,11 +77,37 @@ export class D2LFetchSimpleCache {
 		return key;
 	}
 
-	_clone(result) {
-		return result.then(function(response) {
-			if (response instanceof Response) {
-				return response.clone();
-			}
-		});
+	_clone(response) {
+		if (response instanceof Response === false) {
+			return Promise.resolve(response);
+		}
+
+		// body can only be read once, override the functions
+		// so that they return the output of the original call
+
+		// NOTE: This is pretty hacky but unfortunately the native
+		// 	     response.clone() method can lead to sporadic
+		//		 "Cannot clone a disturbed response" errors in Safari.
+		//		 See https://github.com/Brightspace/d2l-fetch-dedupe/pull/13 for more details.
+		return response.text()
+			.then(function(textData) {
+				response.json = function() {
+					return Promise.resolve(JSON.parse(textData));
+				};
+				response.text = function() {
+					return Promise.resolve(textData);
+				};
+				response.arrayBuffer = function() {
+					return Promise.reject(new Error('simple-cache middleware cannot be used with arrayBuffer response bodies'));
+				};
+				response.blob = function() {
+					return Promise.reject(new Error('simple-cache middleware cannot be used with blob response bodies'));
+				};
+				response.formData = function() {
+					return Promise.reject(new Error('simple-cache middleware cannot be used with formData response bodies'));
+				};
+
+				return response;
+			});
 	}
 }
