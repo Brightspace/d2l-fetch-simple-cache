@@ -78,8 +78,9 @@ By default `d2l-fetch-simple-cache` will cache responses for 2 minutes, or the t
 
 ## Browser compatibility
 
-`d2l-fetch-simple-cache` makes use of a javascript feature that is not yet fully supported across all modern browsers: [Promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise). If you need to support browsers that do not yet implement this feature you will need to include polyfills for this functionality.
+`d2l-fetch-simple-cache` makes use of two javascript features that are not yet fully supported across all modern browsers: [Promises](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes). If you need to support browsers that do not yet implement this feature you will need to include polyfills for this functionality.
 
 We recommend:
 
 * [promise-polyfill](https://github.com/PolymerLabs/promise-polyfill/)
+* [`Array.prototype.includes` polyfill](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes#Polyfill)
