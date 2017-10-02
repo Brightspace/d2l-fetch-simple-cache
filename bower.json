@@ -1,7 +1,7 @@
 {
   "name": "d2l-fetch-simple-cache",
   "description": "Provides a middleware function for de-duplicating fetch requests for the same url+auth combination",
-  "main": "index.js",
+  "main": "d2l-fetch-simple-cache.html",
   "authors": [
     "D2L Corporation"
   ],
