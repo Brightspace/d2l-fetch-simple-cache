@@ -24,7 +24,17 @@ Reference the script in your html after your reference to `d2l-fetch` (see [here
 <script src="../dist/d2lfetch-simple-cache.js"></script>
 ```
 
-This will add the `simple-cache` middleware function to the `d2lfetch` object.
+This will add the `simple-cache` middleware function to the `d2lfetch` object. Alternatively, you can install `d2l-fetch-simple-cache` via bower:
+
+```sh
+bower install Brightspace/d2l-fetch-simple-cache
+```
+
+and reference it as you would any other bower package:
+
+```html
+<link rel="import" href="../d2l-fetch-simple-cache/d2l-fetch-simple-cache.html">
+```
 
 ### Simple-cache
 
