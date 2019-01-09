@@ -12,8 +12,8 @@
     "test:lint:js": "eslint src/ test/ --ext .js",
     "test:lint": "npm run test:lint:js",
     "test": "npm run test:lint && npm run test:polymer:local",
-    "test:polymer:local": "cross-env LAUNCHPAD_BROWSERS=firefox polymer test --skip-plugin sauce",
-    "test:polymer:sauce": "polymer test --skip-plugin local",
+    "test:polymer:local": "cross-env LAUNCHPAD_BROWSERS=firefox polymer test --skip-plugin sauce --npm",
+    "test:polymer:sauce": "polymer test --skip-plugin local --npm",
     "publish-location": "node publishLocation",
     "prepublish-release": "npm run build",
     "publish-release": "frau-publisher && npm run publish-location"
