@@ -1,4 +1,4 @@
-'use strict';
+import simpleCache from '../../es6/d2lfetch-simple-cache.js';
 
 var invalidRequestInputs = [
 	undefined,
@@ -32,7 +32,7 @@ describe('d2l-fetch-simple-cache', function() {
 		var headers = new Headers(request.headers);
 		var next = sandbox.stub().returns(Promise.resolve());
 		headers.append('cache-control', 'no-cache, no-store');
-		return window.d2lfetch.simpleCache(new Request(request, { headers }), next);
+		return simpleCache(new Request(request, { headers }), next);
 	}
 
 	beforeEach(function() {
@@ -45,24 +45,20 @@ describe('d2l-fetch-simple-cache', function() {
 		sandbox.restore();
 	});
 
-	it('should create the d2lfetch object if it doesn\'t exist', function() {
-		expect(window.d2lfetch).to.be.defined;
-	});
-
 	it('should be a function on the d2lfetch object', function() {
-		expect(window.d2lfetch.simpleCache instanceof Function).to.equal(true);
+		expect(simpleCache instanceof Function).to.equal(true);
 	});
 
 	invalidRequestInputs.forEach(function(input) {
 		it('should throw a TypeError if it is not passed a Request object', function() {
-			return window.d2lfetch.simpleCache(input)
+			return simpleCache(input)
 				.then((function() { expect.fail(); }), function(err) { expect(err instanceof TypeError).to.equal(true); });
 		});
 	});
 
 	it('should call the next function if not yet cached', function() {
 		var next = sandbox.stub().returns(Promise.resolve(new Response()));
-		return window.d2lfetch.simpleCache(getRequest('/path/to/data'), next)
+		return simpleCache(getRequest('/path/to/data'), next)
 			.then(function() {
 				expect(next).to.be.called;
 			});
@@ -70,7 +66,7 @@ describe('d2l-fetch-simple-cache', function() {
 
 	it('should not call the next function if returning from cache', function() {
 		var next = sandbox.stub().returns(Promise.resolve(new Response()));
-		return window.d2lfetch.simpleCache(getRequest('/path/to/data'), next)
+		return simpleCache(getRequest('/path/to/data'), next)
 			.then(function() {
 				expect(next).to.not.be.called;
 			});
@@ -78,7 +74,7 @@ describe('d2l-fetch-simple-cache', function() {
 
 	it('should call the next function if the request is marked as no-cache', function() {
 		var next = sandbox.stub().returns(Promise.resolve(new Response()));
-		return window.d2lfetch.simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache' }), next)
+		return simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache' }), next)
 			.then(function() {
 				expect(next).to.be.called;
 			});
@@ -87,10 +83,10 @@ describe('d2l-fetch-simple-cache', function() {
 	it('should still cache no-cache marked responses for subsequent calls not marked as no-cache', function() {
 		var firstNext = sandbox.stub().returns(Promise.resolve(new Response()));
 		var secondNext = sandbox.stub().returns(Promise.resolve(new Response()));
-		return window.d2lfetch.simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache' }), firstNext)
+		return simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache' }), firstNext)
 			.then(function() {
 				expect(firstNext).to.be.called;
-				return window.d2lfetch.simpleCache(getRequest('/path/to/data'), secondNext)
+				return simpleCache(getRequest('/path/to/data'), secondNext)
 					.then(function() {
 						expect(secondNext).to.not.be.called;
 					});
@@ -101,13 +97,13 @@ describe('d2l-fetch-simple-cache', function() {
 		var firstNext = sandbox.stub().returns(Promise.resolve(new Response()));
 		var secondNext = sandbox.stub().returns(Promise.resolve(new Response()));
 		var thirdNext = sandbox.stub().returns(Promise.resolve(new Response()));
-		return window.d2lfetch.simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache, no-store' }), firstNext)
+		return simpleCache(getRequest('/path/to/data', { 'cache-control': 'no-cache, no-store' }), firstNext)
 			.then(function() {
 				expect(firstNext).to.be.called;
-				return window.d2lfetch.simpleCache(getRequest('/path/to/data'), secondNext)
+				return simpleCache(getRequest('/path/to/data'), secondNext)
 					.then(function() {
 						expect(secondNext).to.be.called;
-						return window.d2lfetch.simpleCache(getRequest('/path/to/data'), thirdNext)
+						return simpleCache(getRequest('/path/to/data'), thirdNext)
 							.then(function() {
 								expect(thirdNext).to.not.be.called;
 							});
@@ -132,10 +128,10 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(input.requests[0]),
 				clearRequest(input.requests[1])
 			]).then(function() {
-				return window.d2lfetch.simpleCache(input.requests[0], firstNext)
+				return simpleCache(input.requests[0], firstNext)
 					.then(function() {
 						expect(firstNext).to.be.called;
-						return window.d2lfetch.simpleCache(input.requests[1], secondNext)
+						return simpleCache(input.requests[1], secondNext)
 							.then(function() {
 								expect(secondNext.called).to.not.equal(input.shouldCache);
 							});
@@ -154,9 +150,9 @@ describe('d2l-fetch-simple-cache', function() {
 		var thirdNext = sandbox.stub().returns(Promise.reject);
 
 		Promise.all([
-			window.d2lfetch.simpleCache(firstRequest, firstNext),
-			window.d2lfetch.simpleCache(secondRequest, secondNext),
-			window.d2lfetch.simpleCache(thirdRequest, thirdNext)
+			simpleCache(firstRequest, firstNext),
+			simpleCache(secondRequest, secondNext),
+			simpleCache(thirdRequest, thirdNext)
 		]).then(function(responses) {
 			// expect the same promise
 			expect(responses[0]).to.equal(responses[1]);
@@ -183,8 +179,8 @@ describe('d2l-fetch-simple-cache', function() {
 		var secondNext = sandbox.stub().returns(Promise.reject);
 
 		Promise.all([
-			window.d2lfetch.simpleCache(firstRequest, firstNext),
-			window.d2lfetch.simpleCache(secondRequest, secondNext)
+			simpleCache(firstRequest, firstNext),
+			simpleCache(secondRequest, secondNext)
 		]).then(function(responses) {
 			responses[0].blob().catch(function(err) {
 				expect(err.message).to.equal('simple-cache middleware cannot be used with blob response bodies');
@@ -201,8 +197,8 @@ describe('d2l-fetch-simple-cache', function() {
 		var secondNext = sandbox.stub().returns(Promise.reject);
 
 		Promise.all([
-			window.d2lfetch.simpleCache(firstRequest, firstNext),
-			window.d2lfetch.simpleCache(secondRequest, secondNext)
+			simpleCache(firstRequest, firstNext),
+			simpleCache(secondRequest, secondNext)
 		]).then(function(responses) {
 			responses[0].formData().catch(function(err) {
 				expect(err.message).to.equal('simple-cache middleware cannot be used with formData response bodies');
@@ -219,8 +215,8 @@ describe('d2l-fetch-simple-cache', function() {
 		var secondNext = sandbox.stub().returns(Promise.reject);
 
 		Promise.all([
-			window.d2lfetch.simpleCache(firstRequest, firstNext),
-			window.d2lfetch.simpleCache(secondRequest, secondNext)
+			simpleCache(firstRequest, firstNext),
+			simpleCache(secondRequest, secondNext)
 		]).then(function(responses) {
 			responses[0].arrayBuffer().catch(function(err) {
 				expect(err.message).to.equal('simple-cache middleware cannot be used with arrayBuffer response bodies');
@@ -241,10 +237,10 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				window.d2lfetch.simpleCache(firstRequest, firstNext)
+				simpleCache(firstRequest, firstNext)
 					.then(function() {
 						expect(firstNext).to.be.called;
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
 									expect(secondNext).not.to.be.called;
@@ -269,10 +265,10 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext, options)
+				return simpleCache(firstRequest, firstNext, options)
 					.then(function() {
 						expect(firstNext).to.be.called;
-						return window.d2lfetch.simpleCache(secondRequest, secondNext, options)
+						return simpleCache(secondRequest, secondNext, options)
 							.then(function() {
 								if (options.methods.includes(method)) {
 									expect(secondNext).not.to.be.called;
@@ -305,16 +301,16 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext)
+				return simpleCache(firstRequest, firstNext)
 					.then(function() {
 						expect(firstNext).to.be.called;
 						var now = Date.now();
 						Date.now = function() { return now + 119999; };
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								expect(secondNext).to.not.be.called;
 								Date.now = function() { return now + 120001; };
-								return window.d2lfetch.simpleCache(thirdRequest, thirdNext)
+								return simpleCache(thirdRequest, thirdNext)
 									.then(function() {
 										expect(thirdNext).to.be.called;
 									});
@@ -335,16 +331,16 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext, { cacheLengthInSeconds: 60 })
+				return simpleCache(firstRequest, firstNext, { cacheLengthInSeconds: 60 })
 					.then(function() {
 						expect(firstNext).to.be.called;
 						var now = Date.now();
 						Date.now = function() { return now + 59999; };
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								expect(secondNext).to.not.be.called;
 								Date.now = function() { return now + 60001; };
-								return window.d2lfetch.simpleCache(thirdRequest, thirdNext)
+								return simpleCache(thirdRequest, thirdNext)
 									.then(function() {
 										expect(thirdNext).to.be.called;
 									});
@@ -365,16 +361,16 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext)
+				return simpleCache(firstRequest, firstNext)
 					.then(function() {
 						expect(firstNext).to.be.called;
 						var now = Date.now();
 						Date.now = function() { return now + 59999; };
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								expect(secondNext).to.not.be.called;
 								Date.now = function() { return now + 60001; };
-								return window.d2lfetch.simpleCache(thirdRequest, thirdNext)
+								return simpleCache(thirdRequest, thirdNext)
 									.then(function() {
 										expect(thirdNext).to.be.called;
 									});
@@ -395,16 +391,16 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext, { cacheLengthInSeconds: 60 })
+				return simpleCache(firstRequest, firstNext, { cacheLengthInSeconds: 60 })
 					.then(function() {
 						expect(firstNext).to.be.called;
 						var now = Date.now();
 						Date.now = function() { return now + 29999; };
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								expect(secondNext).to.not.be.called;
 								Date.now = function() { return now + 30001; };
-								return window.d2lfetch.simpleCache(thirdRequest, thirdNext)
+								return simpleCache(thirdRequest, thirdNext)
 									.then(function() {
 										expect(thirdNext).to.be.called;
 									});
@@ -423,12 +419,12 @@ describe('d2l-fetch-simple-cache', function() {
 				clearRequest(firstRequest),
 				clearRequest(secondRequest)
 			]).then(function() {
-				return window.d2lfetch.simpleCache(firstRequest, firstNext)
+				return simpleCache(firstRequest, firstNext)
 					.then(function() {
 						expect(firstNext).to.be.called;
 						var now = Date.now();
 						Date.now = function() { return now + 30001; };
-						return window.d2lfetch.simpleCache(secondRequest, secondNext)
+						return simpleCache(secondRequest, secondNext)
 							.then(function() {
 								expect(secondNext).to.be.called;
 							});
