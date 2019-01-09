@@ -19,21 +19,13 @@ npm run build
 
 Reference the script in your html after your reference to `d2l-fetch` (see [here](https://github.com/Brightspace/d2l-fetch) for details on d2l-fetch):
 
-```html
-<script src="https://s.brightspace.com/lib/d2lfetch/1.0.2/d2lfetch.js"></script>
-<script src="../dist/d2lfetch-simple-cache.js"></script>
-```
-
-This will add the `simple-cache` middleware function to the `d2lfetch` object. Alternatively, you can install `d2l-fetch-simple-cache` via bower:
-
+Install `d2l-fetch-simple-cache` via npm:
 ```sh
-bower install Brightspace/d2l-fetch-simple-cache
+npm install d2l-fetch-simple-cache
 ```
 
-and reference it as you would any other bower package:
-
-```html
-<link rel="import" href="../d2l-fetch-simple-cache/d2l-fetch-simple-cache.html">
+```javascript
+import simpleCache from 'd2l-fetch-simple-cache';
 ```
 
 ### Simple-cache
@@ -41,9 +33,9 @@ and reference it as you would any other bower package:
 Install the `simple-cache` middleware to d2lfetch via the `use` function and then start making your requests.
 
 ```js
-window.d2lfetch.use({name: 'simple-cache' fn: window.d2lfetch.simpleCache});
+d2lfetch.use({name: 'simple-cache' fn: simpleCache});
 
-window.d2lfetch.fetch(new Request('http://example.com/api/someentity/'))
+d2lfetch.fetch(new Request('http://example.com/api/someentity/'))
 	.then(function(response) {
 		// do something with the response
 	});
@@ -61,9 +53,9 @@ As of `d2l-fetch  v1.2.0` it is possible to provide configuration options during
 * `cacheLengthInSeconds`: This can be used to override the default cache length. (Default is 120 seconds)
 ```js
 //cache responses for 5 minutes
-window.d2lfetch.use({
+d2lfetch.use({
 	name: 'simple-cache',
-	fn: window.d2lfetch.simpleCache,
+	fn: simpleCache,
 	options: { cacheLengthInSeconds: 600 }
 });
 ```
@@ -71,9 +63,9 @@ window.d2lfetch.use({
 * `methods`: This can be used to override the default http methods that are allowed to be cached. (Default is `['GET', 'HEAD', 'OPTIONS']`)
 ```js
 //only cache responses from GET requests
-window.d2lfetch.use({
+d2lfetch.use({
 	name: 'simple-cache',
-	fn: window.d2lfetch.simpleCache,
+	fn: simpleCache,
 	options: { methods: ['GET'] }
 });
 ```
