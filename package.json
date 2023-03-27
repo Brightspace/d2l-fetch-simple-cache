@@ -1,44 +1,25 @@
 {
   "name": "d2l-fetch-simple-cache",
   "description": "Provides a middleware function for caching fetch responses for the same url+auth combination",
-  "main": "index.js",
-  "module": "index.es6.js",
+  "type": "module",
+  "main": "src/index.js",
   "author": "D2L Corporation",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "rollup -c rollup/rollup.config.js",
-    "prepare": "npm run build",
-    "pretest": "npm run build",
-    "test:lint:js": "eslint src/ test/ --ext .js",
-    "test:lint": "npm run test:lint:js",
-    "test": "npm run test:lint && npm run test:polymer:local",
-    "test:polymer:local": "cross-env LAUNCHPAD_BROWSERS=firefox polymer test --skip-plugin sauce --npm",
-    "test:polymer:sauce": "polymer test --skip-plugin local --npm",
-    "publish-location": "node publishLocation",
-    "prepublish-release": "npm run build",
-    "publish-release": "frau-publisher && npm run publish-location"
+    "lint": "eslint . --ext .js,.html",
+    "test": "npm run lint && npm run test:headless",
+    "test:headless": "web-test-runner --files \"./test/**/*.test.js\" --node-resolve"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.1",
-    "cross-env": "^5.0.0",
-    "eslint": "^3.19.0",
-    "eslint-config-brightspace": "^0.2.4",
-    "eslint-plugin-html": "^2.0.1",
-    "polymer-cli": "^1.9.1",
-    "rollup": "^0.67.1",
-    "rollup-plugin-commonjs": "^9.2.0",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-node-resolve": "^3.4.0",
-    "wct-browser-legacy": "^1.0.1"
+    "@open-wc/testing": "^3",
+    "@web/dev-server": "^0.1",
+    "@web/test-runner": "^0.15",
+    "eslint": "^8",
+    "eslint-config-brightspace": "^0.20",
+    "sinon": "^15"
   },
-  "dependencies": {
-    "parse-cache-control": "^1.0.1"
-  },
-  "resolutions": {
-    "inherits": "2.0.3",
-    "samsam": "1.1.3",
-    "supports-color": "3.1.2",
-    "type-detect": "1.0.0"
-  },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "files": [
+    "/src"
+  ]
 }
