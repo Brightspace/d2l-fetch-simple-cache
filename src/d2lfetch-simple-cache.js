@@ -1,4 +1,35 @@
-import parseCacheControl from 'parse-cache-control';
+const maxAgeRe = /max-age=([0-9]+)/;
+
+function parseCacheControl(value, defaultMaxAge) {
+	let noCache = false;
+	let noStore = false;
+	let maxAge = defaultMaxAge;
+	if (typeof(value) === 'string') {
+		value = value.toLowerCase();
+		const parts = value.split(',');
+		parts.forEach((el) => {
+			el = el.trim();
+			if (el === 'no-cache') {
+				noCache = true;
+			} else if (el === 'no-store') {
+				noStore = true;
+			} else {
+				const maxAgeMatch = maxAgeRe.exec(el);
+				if (maxAgeMatch !== null && maxAgeMatch.length === 2) {
+					const maxAgeVal = parseInt(maxAgeMatch[1]);
+					if (!isNaN(maxAgeVal)) {
+						maxAge = maxAgeVal;
+					}
+				}
+			}
+		});
+	}
+	return {
+		noCache,
+		noStore,
+		maxAge
+	};
+}
 
 export class D2LFetchSimpleCache {
 
@@ -7,9 +38,7 @@ export class D2LFetchSimpleCache {
 	}
 
 	cache(request, next, options) {
-		let noCache = false,
-			noStore = false,
-			maxAge = options && options['cacheLengthInSeconds'] ? options['cacheLengthInSeconds'] : (60 * 2); // default to 2 minutes
+		const maxAgeDefault = options && options['cacheLengthInSeconds'] ? options['cacheLengthInSeconds'] : (60 * 2); // default to 2 minutes
 		const methods = options && Array.isArray(options.methods) ? options.methods : ['GET', 'HEAD', 'OPTIONS'];
 
 		if (false === request instanceof Request) {
@@ -24,12 +53,7 @@ export class D2LFetchSimpleCache {
 		}
 
 		const key = this._getKey(request);
-		if (request.headers.has('cache-control')) {
-			const cacheControl = parseCacheControl(request.headers.get('cache-control'));
-			noCache = !!cacheControl['no-cache'];
-			noStore = !!cacheControl['no-store'];
-			maxAge = cacheControl['max-age'] ? cacheControl['max-age'] : maxAge;
-		}
+		const { noCache, noStore, maxAge } = parseCacheControl(request.headers.get('cache-control'), maxAgeDefault);
 
 		if (noCache) {
 			delete this._simplyCachedRequests[key];
@@ -54,7 +78,7 @@ export class D2LFetchSimpleCache {
 		if (result && result instanceof Promise && !noStore) {
 			return result
 				.then(this._clone)
-				.then(function(response) {
+				.then((response) => {
 					const now = Date.now();
 					this._simplyCachedRequests[key] = {
 						cacheSetAt: now,
@@ -62,19 +86,10 @@ export class D2LFetchSimpleCache {
 						response: response
 					};
 					return response;
-				}.bind(this));
+				});
 		}
 
 		return result;
-	}
-
-	_getKey(request) {
-		const key = request.method + request.url;
-		if (request.headers.has('Authorization')) {
-			return key + request.headers.get('Authorization');
-		}
-
-		return key;
 	}
 
 	_clone(response) {
@@ -90,7 +105,7 @@ export class D2LFetchSimpleCache {
 		//		 "Cannot clone a disturbed response" errors in Safari.
 		//		 See https://github.com/Brightspace/d2l-fetch-dedupe/pull/13 for more details.
 		return response.text()
-			.then(function(textData) {
+			.then((textData) => {
 				response.json = function() {
 					return Promise.resolve(JSON.parse(textData));
 				};
@@ -110,4 +125,18 @@ export class D2LFetchSimpleCache {
 				return response;
 			});
 	}
+
+	_getKey(request) {
+		const key = request.method + request.url;
+		if (request.headers.has('Authorization')) {
+			return key + request.headers.get('Authorization');
+		}
+
+		return key;
+	}
+
+	_reset() {
+		this._simplyCachedRequests = [];
+	}
+
 }

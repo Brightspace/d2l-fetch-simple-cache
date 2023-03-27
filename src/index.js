@@ -1,7 +1,11 @@
 import { D2LFetchSimpleCache } from './d2lfetch-simple-cache.js';
 
-const fetchSimpleCache = new D2LFetchSimpleCache();
+const simpleCache = new D2LFetchSimpleCache();
 
-export default function cache(request, next, options) {
-	return fetchSimpleCache.cache(request, next, options);
+export function fetchSimpleCache(request, next, options) {
+	return simpleCache.cache(request, next, options);
+}
+
+export function reset() {
+	simpleCache._reset();
 }
