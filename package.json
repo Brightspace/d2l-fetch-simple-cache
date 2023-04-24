@@ -15,7 +15,7 @@
     "@web/dev-server": "^0.2",
     "@web/test-runner": "^0.15",
     "eslint": "^8",
-    "eslint-config-brightspace": "^0.20",
+    "eslint-config-brightspace": "^0.21",
     "sinon": "^15"
   },
   "version": "2.0.0",
