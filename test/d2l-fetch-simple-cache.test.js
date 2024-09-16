@@ -1,5 +1,5 @@
 import { fetchSimpleCache, reset } from '../src/index.js';
-import { expect } from '@open-wc/testing';
+import { expect } from '@brightspace-ui/testing';
 import sinon from 'sinon';
 
 const requestMethods = [
