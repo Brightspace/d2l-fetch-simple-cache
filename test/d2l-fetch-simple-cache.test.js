@@ -152,9 +152,12 @@ describe('d2l-fetch-simple-cache', () => {
 			fetchSimpleCache(firstRequest, firstNext),
 			fetchSimpleCache(secondRequest, secondNext)
 		]);
-		return responses[0].blob()
-			.then(() => expect.fail())
-			.catch((err) => expect(err.message).to.equal('simple-cache middleware cannot be used with blob response bodies'));
+		try {
+			await responses[0].blob();
+			expect.fail();
+		} catch (err) {
+			expect(err.message).to.equal('simple-cache middleware cannot be used with blob response bodies');
+		}
 	});
 
 	it('should reject calls to formData()', async() => {
@@ -168,9 +171,12 @@ describe('d2l-fetch-simple-cache', () => {
 			fetchSimpleCache(firstRequest, firstNext),
 			fetchSimpleCache(secondRequest, secondNext)
 		]);
-		return responses[0].formData()
-			.then(() => expect.fail())
-			.catch((err) => expect(err.message).to.equal('simple-cache middleware cannot be used with formData response bodies'));
+		try {
+			await responses[0].formData();
+			expect.fail();
+		} catch (err) {
+			expect(err.message).to.equal('simple-cache middleware cannot be used with formData response bodies');
+		}
 	});
 
 	it('should reject calls to arrayBuffer()', async() => {
@@ -184,9 +190,12 @@ describe('d2l-fetch-simple-cache', () => {
 			fetchSimpleCache(firstRequest, firstNext),
 			fetchSimpleCache(secondRequest, secondNext)
 		]);
-		return responses[0].arrayBuffer()
-			.then(() => expect.fail())
-			.catch((err) => expect(err.message).to.equal('simple-cache middleware cannot be used with arrayBuffer response bodies'));
+		try {
+			await responses[0].arrayBuffer();
+			expect.fail();
+		} catch (err) {
+			expect(err.message).to.equal('simple-cache middleware cannot be used with arrayBuffer response bodies');
+		}
 	});
 
 	requestMethods.forEach((method) => {
