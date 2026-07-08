@@ -20,5 +20,8 @@
   "version": "2.1.3",
   "files": [
     "/src"
-  ]
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
